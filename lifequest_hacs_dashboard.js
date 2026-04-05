@@ -54,6 +54,7 @@ class LifequestCard extends HTMLElement {
           threshold: pointsSensor.attributes.threshold || 250,
           progressPct: pointsSensor.attributes.progress_pct || 0,
           level: levelSensor ? parseInt(levelSensor.state) || 1 : 1,
+          levelName: levelSensor?.attributes?.level_name || "",
           questCount: parseInt(questsSensor.state) || 0,
           quests: questsAttr,
         });
@@ -258,7 +259,7 @@ class LifequestCard extends HTMLElement {
                   <div class="progress-text">${p.points} / ${p.threshold} pts (${p.progressPct}%)</div>
                 </div>
                 <div class="player-meta">
-                  <span class="badge badge-level">Lvl ${p.level}</span>
+                  <span class="badge badge-level">Lvl ${p.level}${p.levelName ? ` ${p.levelName}` : ''}</span>
                   <span class="badge badge-quests">${p.questCount} quests</span>
                 </div>
               </div>
