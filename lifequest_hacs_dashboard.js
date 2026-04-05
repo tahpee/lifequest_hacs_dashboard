@@ -14,7 +14,8 @@ class LifequestCard extends HTMLElement {
 
   getCardSize() {
     const players = this._getPlayers();
-    return 1 + players.length * 2;
+    const rewards = this._getPendingRewards();
+    return 1 + players.length * 2 + (rewards.length > 0 ? rewards.length + 1 : 0);
   }
 
   _getPlayers() {
@@ -64,6 +65,13 @@ class LifequestCard extends HTMLElement {
     return players.sort((a, b) => a.name.localeCompare(b.name));
   }
 
+  _getPendingRewards() {
+    if (!this._hass) return [];
+    const sensor = this._hass.states["sensor.lifequest_rewards_pending"];
+    if (!sensor) return [];
+    return sensor.attributes.rewards || [];
+  }
+
   _handleToggle(playerSlug) {
     this._expanded = this._expanded === playerSlug ? null : playerSlug;
     this._render();
@@ -77,8 +85,16 @@ class LifequestCard extends HTMLElement {
     });
   }
 
+  _handleDeliverReward(cycleId) {
+    if (!this._hass) return;
+    this._hass.callService("lifequest", "deliver_reward", {
+      cycle_id: cycleId,
+    });
+  }
+
   _render() {
     const players = this._getPlayers();
+    const pendingRewards = this._getPendingRewards();
 
     this._root.innerHTML = `
       <style>
@@ -151,6 +167,10 @@ class LifequestCard extends HTMLElement {
           background: var(--label-badge-green, #4caf50);
           color: #fff;
         }
+        .badge-reward {
+          background: #ff9800;
+          color: #fff;
+        }
         .progress-bar {
           width: 100%;
           height: 6px;
@@ -209,7 +229,7 @@ class LifequestCard extends HTMLElement {
         .freq-daily { background: #e3f2fd; color: #1565c0; }
         .freq-weekly { background: #fff3e0; color: #e65100; }
         .freq-once { background: #f3e5f5; color: #7b1fa2; }
-        .complete-btn {
+        .complete-btn, .deliver-btn {
           background: var(--primary-color, #03a9f4);
           color: var(--text-primary-color, #fff);
           border: none;
@@ -221,8 +241,49 @@ class LifequestCard extends HTMLElement {
           white-space: nowrap;
           transition: opacity 0.2s;
         }
-        .complete-btn:hover {
+        .complete-btn:hover, .deliver-btn:hover {
           opacity: 0.85;
+        }
+        .deliver-btn {
+          background: #ff9800;
+        }
+        .rewards-section {
+          margin-top: 16px;
+          padding: 12px;
+          border-radius: 8px;
+          border: 1px solid #ff9800;
+          background: rgba(255, 152, 0, 0.05);
+        }
+        .rewards-header {
+          font-weight: 600;
+          font-size: 1em;
+          color: #ff9800;
+          margin-bottom: 8px;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+        }
+        .reward-item {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 8px 0;
+          border-bottom: 1px solid var(--divider-color, #e0e0e0);
+        }
+        .reward-item:last-child {
+          border-bottom: none;
+        }
+        .reward-info {
+          flex: 1;
+        }
+        .reward-player {
+          font-weight: 500;
+          color: var(--primary-text-color);
+        }
+        .reward-meta {
+          font-size: 0.8em;
+          color: var(--secondary-text-color);
+          margin-top: 2px;
         }
         .empty {
           color: var(--secondary-text-color);
@@ -236,6 +297,31 @@ class LifequestCard extends HTMLElement {
           <ha-icon icon="mdi:shield-star"></ha-icon>
           Lifequest
         </div>
+        ${
+          pendingRewards.length > 0
+            ? `<div class="rewards-section">
+                <div class="rewards-header">
+                  <ha-icon icon="mdi:gift" style="--icon-primary-color: #ff9800"></ha-icon>
+                  Pending Rewards (${pendingRewards.length})
+                </div>
+                ${pendingRewards
+                  .map(
+                    (r) => `
+                  <div class="reward-item">
+                    <div class="reward-info">
+                      <div class="reward-player">${r.player_name}</div>
+                      <div class="reward-meta">Reached ${r.level_name || `Level ${r.level}`}</div>
+                    </div>
+                    <button class="deliver-btn" data-action="deliver" data-cycle="${r.cycle_id}">
+                      Deliver
+                    </button>
+                  </div>
+                `
+                  )
+                  .join("")}
+              </div>`
+            : ""
+        }
         ${
           players.length === 0
             ? '<div class="empty">No players found</div>'
@@ -324,6 +410,16 @@ class LifequestCard extends HTMLElement {
         el.textContent = "Done!";
         el.disabled = true;
         this._handleCompleteQuest(playerId, questId);
+      });
+    });
+
+    this._root.querySelectorAll("[data-action='deliver']").forEach((el) => {
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const cycleId = parseInt(el.dataset.cycle);
+        el.textContent = "Delivered!";
+        el.disabled = true;
+        this._handleDeliverReward(cycleId);
       });
     });
   }
