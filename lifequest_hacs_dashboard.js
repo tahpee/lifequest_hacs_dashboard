@@ -109,7 +109,7 @@ class LifequestCard extends HTMLElement {
           box-shadow: var(--ha-card-box-shadow, 0 2px 2px 0 rgba(0,0,0,0.14));
         }
         .header {
-          font-size: 1.2em;
+          font-size: 1.4em;
           font-weight: 600;
           margin-bottom: 12px;
           color: var(--primary-text-color);
@@ -141,14 +141,14 @@ class LifequestCard extends HTMLElement {
         }
         .player-name {
           font-weight: 500;
-          font-size: 1.05em;
+          font-size: 1.2em;
           color: var(--primary-text-color);
         }
         .player-meta {
           display: flex;
           gap: 12px;
           align-items: center;
-          font-size: 0.85em;
+          font-size: 1em;
           color: var(--secondary-text-color);
         }
         .badge {
@@ -156,7 +156,7 @@ class LifequestCard extends HTMLElement {
           align-items: center;
           padding: 2px 8px;
           border-radius: 12px;
-          font-size: 0.8em;
+          font-size: 0.9em;
           font-weight: 600;
         }
         .badge-level {
@@ -186,7 +186,7 @@ class LifequestCard extends HTMLElement {
           transition: width 0.3s ease;
         }
         .progress-text {
-          font-size: 0.75em;
+          font-size: 0.9em;
           color: var(--secondary-text-color);
           margin-top: 4px;
         }
@@ -210,10 +210,11 @@ class LifequestCard extends HTMLElement {
         }
         .quest-title {
           font-weight: 500;
+          font-size: 1.05em;
           color: var(--primary-text-color);
         }
         .quest-meta {
-          font-size: 0.8em;
+          font-size: 0.9em;
           color: var(--secondary-text-color);
           margin-top: 2px;
         }
@@ -221,7 +222,7 @@ class LifequestCard extends HTMLElement {
           display: inline-block;
           padding: 1px 6px;
           border-radius: 4px;
-          font-size: 0.7em;
+          font-size: 0.8em;
           font-weight: 600;
           text-transform: uppercase;
           margin-right: 6px;
@@ -235,7 +236,7 @@ class LifequestCard extends HTMLElement {
           border: none;
           border-radius: 6px;
           padding: 6px 12px;
-          font-size: 0.8em;
+          font-size: 0.9em;
           font-weight: 600;
           cursor: pointer;
           white-space: nowrap;
@@ -256,7 +257,7 @@ class LifequestCard extends HTMLElement {
         }
         .rewards-header {
           font-weight: 600;
-          font-size: 1em;
+          font-size: 1.2em;
           color: #ff9800;
           margin-bottom: 8px;
           display: flex;
@@ -278,10 +279,11 @@ class LifequestCard extends HTMLElement {
         }
         .reward-player {
           font-weight: 500;
+          font-size: 1.05em;
           color: var(--primary-text-color);
         }
         .reward-meta {
-          font-size: 0.8em;
+          font-size: 0.9em;
           color: var(--secondary-text-color);
           margin-top: 2px;
         }
