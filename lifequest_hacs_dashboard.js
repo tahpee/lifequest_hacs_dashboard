@@ -67,7 +67,9 @@ class LifequestCard extends HTMLElement {
 
   _getPendingRewards() {
     if (!this._hass) return [];
-    const sensor = this._hass.states["sensor.lifequest_rewards_pending"];
+    const sensor =
+      this._hass.states["sensor.lifequest_rewards_pending"] ||
+      this._hass.states["sensor.rewards_pending"];
     if (!sensor) return [];
     return sensor.attributes.rewards || [];
   }
